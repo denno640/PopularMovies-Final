@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="most_popular">Sort by most popular</string>
+    <string name="top_rated">Sort by top rated</string>
+    <string name="my_favourites">My Favourites</string>
+    <string name="sort_title">Sort movies</string>
+    <string name="sort_list_key">key_sort_list</string>
+    <string name="action_settings">Settings</string>
+    <string name="description">description</string>
+    <string name="base_url">https://api.themoviedb.org/3/movie/</string>
+    <!--API KEY has been removed. Please get an api key from The movies database api-->
+    <string name="api_key">xxxxxxxxxxxxxxxxxxxxxxxxxxx</string>
+    <!--//////////////////////////////////////////////////-->
+    <string name="language">en_US</string>
+    <string name="tap_to_retry">Tap To Retry</string>
+    <string name="key_setting">key_setting_category</string>
+    <string name="category_setting">Sort Criteria Setting</string>
+    <string name="original_movie_title">Original movie title:</string>
+    <string name="user_rating">User rating:</string>
+    <string name="release_date">Release date:</string>
+    <string name="plot_synopsis">Plot Synopsis:</string>
+    <string name="singleMovie">singleMovie</string>
+    <string name="base_image_url">https://image.tmdb.org/t/p/w185</string>
+    <string name="null_preference">preference is null</string>
+    <string name="could_not_load_movies">Could not load movies. cause:</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="fav_btn_text">Mark as favourite</string>
+    <string name="reviews_btn_text">Read Reviews</string>
+    <string name="trailer_btn_text">Watch Trailers</string>
+    <string name="isFavourite">isFavourite</string>
+    <string name="youtube_link">http://www.youtube.com/watch?v=</string>
+    <string name="unable_to_play_trailer">This trailer cannot be played</string>
+    <string name="youtube">YouTube</string>
+    <string name="favourite_text">Favourite</string>
+    <string name="share">share</string>
+    <string name="reloading">reloading data...</string>
+</resources>

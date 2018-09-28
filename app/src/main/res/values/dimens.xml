@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_8dp">8dp</dimen>
+    <dimen name="margin_16dp">16dp</dimen>
+    <dimen name="margin_0dp">0dp</dimen>
+    <dimen name="detail_poster_width">150dp</dimen>
+    <dimen name="detail_poster_height">180dp</dimen>
+    <dimen name="card_corner_radius_4dp">4dp</dimen>
+    <dimen name="poster_dimension">150dp</dimen>
+    <dimen name="dimen_30dp">30dp</dimen>
+    <dimen name="size_50dp">50dp</dimen>
+    <dimen name="size_0dp">0dp</dimen>
+    <dimen name="margin_2dp">2dp</dimen>
+</resources>

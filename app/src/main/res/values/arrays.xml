@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="orderByEntries">
+        <item>@string/most_popular</item>
+        <item>@string/top_rated</item>
+        <item>@string/my_favourites</item>
+    </string-array>
+   <string-array name="orderByEntryValues">
+       <item>@string/most_popular</item>
+       <item>@string/top_rated</item>
+       <item>@string/my_favourites</item>
+   </string-array>
+</resources>
