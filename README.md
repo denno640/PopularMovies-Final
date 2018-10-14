@@ -12,9 +12,11 @@ Images are loaded using Picasso library
 Retrofit is used to make network calls to the api
 # Paging Library
 This library is used to load data in the background for a much better user experience. Data pagination is achieved using this library
+# Room Persistence Library
+It is used to save user chosen favourite movies which are then displayed without a network call
 # Sorting Movies
-A settings fragment is implemented to provide the two settings required: sorting movies by movie ratings and sorting by movie popularity
-# Apk file
-An apk file is provided. you can install the app and see its features
+A settings fragment is implemented to provide the two settings required: sorting movies by movie ratings, sorting by movie popularity and sorting by user favourite list
+# Final Features
+Now it is possible to choose your favourite movies which are then stored locally using Room persistency library. It is possible to view movie revies and trailers. The video links are sharable 
 # Future Release
-This project will be updated in the near future as part of the 2nd project in the nanodegree
+This is the final version of the popular movies project.
