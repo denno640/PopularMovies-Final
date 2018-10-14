@@ -70,7 +70,7 @@ public class MoviesRepository {
         PagedList.Config pagedListConfig = (new PagedList.Config.Builder()
                 .setPrefetchDistance(5)
                 .setPageSize(30)
-                .setEnablePlaceholders(true)
+                //.setEnablePlaceholders(true)
                 .build());
         singleMessages = new LivePagedListBuilder<>(database
                 .favouriteDao()
@@ -99,7 +99,7 @@ public class MoviesRepository {
                 });
     }
 
-    public static void deleteFromFavourites(SingleMovie singleMovie) {
+    public static void deleteFromFavourites(String id) {
         PopularMoviesAppExecutors
                 .getInstance()
                 .getDiskIO()
@@ -108,7 +108,7 @@ public class MoviesRepository {
                             PopularMoviesApplication
                                     .getApp()
                                     .getApplicationContext());
-                    db.favouriteDao().delete(singleMovie);
+                    db.favouriteDao().deleteStatus(id);
                 });
     }
 

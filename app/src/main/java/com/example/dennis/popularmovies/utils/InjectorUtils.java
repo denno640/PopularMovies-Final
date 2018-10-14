@@ -23,12 +23,12 @@ import com.example.dennis.popularmovies.viewmodels.PopularMoviesViewModelFactory
 public class InjectorUtils {
 
 
-    public static MoviesDataSourceFactory provideMoviesDataSourceFactory(String sortCriteria) {
-        return new MoviesDataSourceFactory(sortCriteria);
+    public static MoviesDataSourceFactory provideMoviesDataSourceFactory() {
+        return new MoviesDataSourceFactory();
     }
 
-    public static PopularMoviesViewModelFactory providePopularMoviesViewModelFactory(String sortCriteria) {
+   /* public static PopularMoviesViewModelFactory providePopularMoviesViewModelFactory(String sortCriteria) {
         MoviesRepository mRepository = MoviesRepository.getInstance();
         return new PopularMoviesViewModelFactory(mRepository,sortCriteria);
-    }
+    }*/
 }

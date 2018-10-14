@@ -23,6 +23,9 @@ public interface FavouriteDao {
     @Delete
     void delete(SingleMovie movie);
 
+    @Query("DELETE  FROM favourites WHERE id =:id")
+    void deleteStatus(String id);
+
     @Query("SELECT * FROM favourites")
     DataSource.Factory<Integer, SingleMovie> getAllFavouriteMovies();
 }

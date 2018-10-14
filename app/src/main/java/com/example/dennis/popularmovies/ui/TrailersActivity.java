@@ -68,7 +68,7 @@ public class TrailersActivity extends AppCompatActivity implements
 
         trailerRecyclerView.setLayoutManager(manager);
         resultList = new ArrayList<>();
-        mAdapter = new TrailersAdapter(this, resultList, posterPath);
+       // mAdapter = new TrailersAdapter(this, resultList, posterPath);
         trailerRecyclerView.setAdapter(mAdapter);
 
         viewModel = ViewModelProviders.of(this).get(TrailersViewModel.class);

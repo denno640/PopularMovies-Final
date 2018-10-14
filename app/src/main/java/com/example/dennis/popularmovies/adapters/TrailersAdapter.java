@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dennis.popularmovies.PopularMoviesApplication;
+import com.example.dennis.popularmovies.pojos.SingleReview;
 import com.example.dennis.popularmovies.pojos.SingleTrailer;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -34,12 +35,12 @@ import com.example.dennis.popularmovies.R;
 
 import java.util.List;
 
-public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailerViewHolder> {
+public class TrailersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private OnTrailerClickedHandler mHandler;
-    private List<SingleTrailer> resultList;
+    private List<Object> resultList;
     private String posterPath;
 
-    public TrailersAdapter(OnTrailerClickedHandler mHandler, List<SingleTrailer> resultList
+    public TrailersAdapter(OnTrailerClickedHandler mHandler, List<Object> resultList
             , String posterPath) {
         this.mHandler = mHandler;
         this.resultList = resultList;
@@ -49,22 +50,41 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
     @NonNull
     @Override
-    public TrailerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.trailer_item
-                , parent, false);
-        return new TrailerViewHolder(view);
+        View view;
+
+        if (viewType == R.layout.trailer_item) {
+            view = layoutInflater.inflate(R.layout.trailer_item, parent, false);
+            return new TrailerViewHolder(view);
+        } else if (viewType == R.layout.review_item) {
+            view = layoutInflater.inflate(R.layout.review_item, parent, false);
+            return new ReviewViewHolder(view);
+        } else {
+            throw new IllegalArgumentException("unknown view type");
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrailerViewHolder holder, int position) {
-        holder.onBind(resultList.get(position));
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        switch (getItemViewType(position)) {
+            case R.layout.trailer_item:
+                ((TrailerViewHolder) holder).onBind((SingleTrailer) resultList.get(position));
+                break;
+            case R.layout.review_item:
+                ((ReviewViewHolder) holder).onBind((SingleReview) resultList.get(position));
+                break;
+        }
 
     }
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        if (resultList.get(position) instanceof SingleTrailer) {
+            return R.layout.trailer_item;
+        } else {
+            return R.layout.review_item;
+        }
     }
 
     @Override
@@ -106,13 +126,13 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.share_btn:
-                    mHandler.onTrailerShared(resultList.get(getAdapterPosition()));
+                    mHandler.onTrailerShared((SingleTrailer) resultList.get(getAdapterPosition()));
                     break;
                 case R.id.trailerShareText:
-                    mHandler.onTrailerShared(resultList.get(getAdapterPosition()));
+                    mHandler.onTrailerShared((SingleTrailer) resultList.get(getAdapterPosition()));
                     break;
                 default:
-                    mHandler.onTrailerClicked(resultList.get(getAdapterPosition()));
+                    mHandler.onTrailerClicked((SingleTrailer) resultList.get(getAdapterPosition()));
 
             }
         }
@@ -120,22 +140,53 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         private void onBind(SingleTrailer result) {
             trailerName.setText(result.getName());
             trailerType.setText(String.format("Video type: %s", result.getType()));
-           /* Picasso.with(itemView.getContext())
-                    .load(itemView.getContext().getString(R.string.base_image_url)+posterPath)
+            PopularMoviesApplication.getApp()
+                    .getPicassoWithCache()
+                    .load(itemView.getContext().getString(R.string.base_image_url) + posterPath)
                     .priority(Picasso.Priority.HIGH)
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(photo, new Callback() {
                         @Override
                         public void onSuccess() {
-
                         }
 
                         @Override
                         public void onError() {
+                            PopularMoviesApplication.getApp()
+                                    .getPicassoWithCache()
+                                    .load(itemView.getContext().getString(R.string.base_image_url) + posterPath)
+                                    .priority(Picasso.Priority.HIGH)
+                                    // .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(photo, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                        }
 
+                                        @Override
+                                        public void onError() {
 
+                                        }
+                                    });
                         }
-                    });*/
+                    });
+        }
+    }
+
+    public class ReviewViewHolder extends RecyclerView.ViewHolder {
+        private TextView reviewAuthor, reviewContent;
+        private ImageView photo;
+
+        public ReviewViewHolder(View view) {
+            super(view);
+            reviewAuthor = view.findViewById(R.id.review_author);
+            reviewContent = view.findViewById(R.id.review_content);
+            photo = view.findViewById(R.id.photo);
+        }
+
+
+        private void onBind(SingleReview result) {
+            reviewAuthor.setText(String.format("Author: %s", result.getAuthor()));
+            reviewContent.setText(String.format("Review: %s", result.getContent()));
             PopularMoviesApplication.getApp()
                     .getPicassoWithCache()
                     .load(itemView.getContext().getString(R.string.base_image_url) + posterPath)

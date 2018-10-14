@@ -36,9 +36,7 @@ import com.example.dennis.popularmovies.R;
 import com.example.dennis.popularmovies.adapters.PopularMoviesAdapter;
 import com.example.dennis.popularmovies.pojos.SingleMovie;
 import com.example.dennis.popularmovies.utils.ColumnCalculator;
-import com.example.dennis.popularmovies.utils.InjectorUtils;
 import com.example.dennis.popularmovies.viewmodels.PopularMoviesViewModel;
-import com.example.dennis.popularmovies.viewmodels.PopularMoviesViewModelFactory;
 
 /**
  * could not set ButterKnife with gradle 3.1.4
@@ -55,6 +53,8 @@ public class PopularMovies extends AppCompatActivity implements
     private TextView sortCriteriumTextView;
     private PopularMoviesViewModel viewModel;
     private RecyclerView moviesRvItem;
+    private String sortCriteria;
+    private PagedList<SingleMovie> singleMoviePagedList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,25 +72,23 @@ public class PopularMovies extends AppCompatActivity implements
         moviesRvItem.setLayoutManager(manager);
         mAdapter = new PopularMoviesAdapter(this);
         moviesRvItem.setAdapter(mAdapter);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String sortCriteria = preferences.getString(getString(R.string.sort_list_key), "");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sortCriteria = preferences.getString(getString(R.string.sort_list_key), "");
         if (sortCriteria.equals(""))
             sortCriteria = getString(R.string.most_popular);
         sortCriteriumTextView = findViewById(R.id.sort_criteria_tv);
         sortCriteriumTextView.setText(sortCriteria);
 
         if (sortCriteria.equals(getString(R.string.my_favourites))) {
-            PopularMoviesViewModelFactory factory = InjectorUtils.providePopularMoviesViewModelFactory(sortCriteria);
-            viewModel = ViewModelProviders.of(this, factory).get(PopularMoviesViewModel.class);
+            viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
             viewModel.getFavouriteList().observe(this, this::onFavouriteMoviesReceived);
 
         } else {
-            PopularMoviesViewModelFactory factory = InjectorUtils.providePopularMoviesViewModelFactory(sortCriteria);
-            viewModel = ViewModelProviders.of(this, factory).get(PopularMoviesViewModel.class);
-            if (mAdapter.getCurrentList() != null)
-                mAdapter.getCurrentList().getDataSource().invalidate();
-            viewModel.getMovieList().observe(this, singleMovies -> mAdapter
-                    .submitList(singleMovies));
+            viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
+            viewModel.getMovieList().observe(this, singleMovies -> {
+                mAdapter.submitList(singleMovies);
+                if(singleMovies!= null)singleMoviePagedList=singleMovies;
+            });
 
             viewModel.getNetworkState().observe(this, networkState -> {
                 if (networkState != null) {
@@ -102,7 +100,7 @@ public class PopularMovies extends AppCompatActivity implements
                             // Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
                             break;
                         case "FAILED":
-                            // Toast.makeText(this, "failed...", Toast.LENGTH_SHORT).show();
+                             //Toast.makeText(this, "failed...", Toast.LENGTH_SHORT).show();
                             if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
                             if (mToast != null) {
                                 mToast.cancel();
@@ -166,54 +164,71 @@ public class PopularMovies extends AppCompatActivity implements
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+String previousSortingCriteria = sortCriteria;
+        sortCriteria = sharedPreferences.getString(key, "");
 
-        String newCriteria = sharedPreferences.getString(key, "");
-        sortCriteriumTextView.setText(newCriteria);
+        sortCriteriumTextView.setText(sortCriteria);
         //as soon as the user chooses a new setting
         swipeRefreshLayout.setRefreshing(true);
-        if (newCriteria.equals(getString(R.string.my_favourites))) {
+        if (sortCriteria.equals(getString(R.string.my_favourites))) {
 
             // mAdapter.getCurrentList().clear();
             mAdapter = null;
             mAdapter = new PopularMoviesAdapter(this);
             moviesRvItem.setAdapter(mAdapter);
-
             viewModel.getFavouriteList().observe(this, PopularMovies.this::onFavouriteMoviesReceived);
+
         } else {
+            if(!previousSortingCriteria.equals(getString(R.string.my_favourites))){
+                swipeRefreshLayout.setRefreshing(true);
+                //if(mAdapter == null) Toast.makeText(this, "adapter is null", Toast.LENGTH_SHORT).show();
+                if(mAdapter.getCurrentList()!= null)
+                    mAdapter.getCurrentList().getDataSource().invalidate();
+            }else {
 
-            mAdapter = null;
-            mAdapter = new PopularMoviesAdapter(this);
-            moviesRvItem.setAdapter(mAdapter);
-            viewModel.getMovieList().observe(this, singleMovies -> mAdapter
-                    .submitList(singleMovies));
+                mAdapter = null;
+                mAdapter = new PopularMoviesAdapter(this);
+                moviesRvItem.setAdapter(mAdapter);
+                swipeRefreshLayout.setRefreshing(true);
+                if(singleMoviePagedList != null) {
+                    singleMoviePagedList.getDataSource().invalidate();
+                }else{
+                    viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
+                    viewModel.getMovieList().observe(this, singleMovies -> {
+                        mAdapter.submitList(singleMovies);
+                        if(singleMovies!= null)singleMoviePagedList=singleMovies;
+                    });
 
-            viewModel.getNetworkState().observe(this, networkState -> {
-                if (networkState != null) {
-                    //some feedback to the user to know what causes the problem
-                    //in production we cannot tell the user the actual cause of
-                    //loading failure especially if it relates to our server
-                    switch (networkState.getStatus()) {
-                        case "RUNNING":
-                            // Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
-                            break;
-                        case "FAILED":
-                            // Toast.makeText(this, "failed...", Toast.LENGTH_SHORT).show();
-                            if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
-                            if (mToast != null) {
-                                mToast.cancel();
+                    viewModel.getNetworkState().observe(this, networkState -> {
+                        if (networkState != null) {
+                            //some feedback to the user to know what causes the problem
+                            //in production we cannot tell the user the actual cause of
+                            //loading failure especially if it relates to our server
+                            switch (networkState.getStatus()) {
+                                case "RUNNING":
+                                    // Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "FAILED":
+                                    //Toast.makeText(this, "failed...", Toast.LENGTH_SHORT).show();
+                                    if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
+                                    if (mToast != null) {
+                                        mToast.cancel();
+                                    }
+                                    String toastMessage = getString(R.string.could_not_load_movies) + networkState.getMsg();
+                                    mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+                                    mToast.show();
+                                    break;
+                                default:
+                                    if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
+                                    break;
                             }
-                            String toastMessage = getString(R.string.could_not_load_movies) + networkState.getMsg();
-                            mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
-                            mToast.show();
-                            break;
-                        default:
-                            if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
-                            break;
-                    }
-                    mAdapter.setNetworkState(networkState);
+                            mAdapter.setNetworkState(networkState);
+                        }
+
+                    });
                 }
 
-            });
+            }
 
         }
 
@@ -221,9 +236,9 @@ public class PopularMovies extends AppCompatActivity implements
 
     private void onFavouriteMoviesReceived(PagedList<SingleMovie> singleMovies) {
         if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
-        if (mAdapter.getCurrentList() != null)
-            mAdapter.getCurrentList().detach();
-        mAdapter.submitList(singleMovies);
+       if(sortCriteria.equals(getString(R.string.my_favourites))){
+            mAdapter.submitList(singleMovies);
+        }
     }
 
     //we unregister the preferenceChangeLister when the activity is destroyed

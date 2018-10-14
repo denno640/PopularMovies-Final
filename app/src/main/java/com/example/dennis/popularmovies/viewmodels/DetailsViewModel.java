@@ -32,8 +32,8 @@ public class DetailsViewModel extends ViewModel {
         MoviesRepository.saveFavouriteMovie(movie);
     }
 
-    public void deleteFromFavourites(SingleMovie singleMovie) {
-        MoviesRepository.deleteFromFavourites(singleMovie);
+    public void deleteFromFavourites(String id) {
+        MoviesRepository.deleteFromFavourites(id);
     }
 
     public void saveStatus(FavouriteStatus status) {

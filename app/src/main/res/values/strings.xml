@@ -9,7 +9,7 @@
     <string name="description">description</string>
     <string name="base_url">https://api.themoviedb.org/3/movie/</string>
     <!--API KEY has been removed. Please get an api key from The movies database api-->
-    <string name="api_key">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</string>
+    <string name="api_key">xxxxxxxxxxxxxxxxxxxxxxxxxxxx</string>
     <!--//////////////////////////////////////////////////-->
     <string name="language">en_US</string>
     <string name="tap_to_retry">Tap To Retry</string>
@@ -34,4 +34,7 @@
     <string name="favourite_text">Favourite</string>
     <string name="share">share</string>
     <string name="reloading">reloading data...</string>
+    <string name="reviews_trailers_text">Reviews and Trailers. Tap trailer to watch or share</string>
+    <string name="scroll_trailer_prompt">Scroll below to find all movie trailers</string>
+    <string name="scroll_reviews_text">Scroll below to find all reviews</string>
 </resources>

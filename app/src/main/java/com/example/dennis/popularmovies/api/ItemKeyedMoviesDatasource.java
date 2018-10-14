@@ -42,17 +42,15 @@ public class ItemKeyedMoviesDatasource extends ItemKeyedDataSource<Long, SingleM
 
     private MutableLiveData<NetworkState> networkState;
     private MutableLiveData<NetworkState> initialLoading;
-    private String sortCriteria;
     private long page_index = 1L;
-
+    private String sortCriteria;
     private Context context = PopularMoviesApplication
             .getApp()
             .getApplicationContext();
 
-    public ItemKeyedMoviesDatasource(String sortCriteria) {
+    public ItemKeyedMoviesDatasource() {
         networkState = new MutableLiveData<>();
         initialLoading = new MutableLiveData<>();
-        this.sortCriteria = sortCriteria;
 
     }
 
@@ -67,7 +65,7 @@ public class ItemKeyedMoviesDatasource extends ItemKeyedDataSource<Long, SingleM
                             @NonNull ItemKeyedDataSource.LoadInitialCallback<SingleMovie> callback) {
         networkState.postValue(NetworkState.LOADING);
         SharedPreferences pfs = PreferenceManager.getDefaultSharedPreferences(context);
-        sortCriteria = pfs.getString(context.getString(R.string.sort_list_key), "");
+         sortCriteria = pfs.getString(context.getString(R.string.sort_list_key), "");
 
         if (sortCriteria.equals(context.getString(R.string.most_popular))) {
 
@@ -141,6 +139,40 @@ public class ItemKeyedMoviesDatasource extends ItemKeyedDataSource<Long, SingleM
                             errorMessage = t.getMessage();
                             networkState.postValue(new NetworkState("FAILED", errorMessage));
                             // Log.d(TAG, "Encountered an error while fetching movies");
+                        }
+                    });
+        }else{
+            ApiMerchant
+                    .getInstance()
+                    .getMyApiService()
+                    .getTopMostPopularMovies(ApiMerchant.provideApikey(), ApiMerchant.provideLanguage(), page_index)
+                    .enqueue(new Callback<TopRated>() {
+                        @Override
+                        public void onResponse(@NonNull Call<TopRated> call, @NonNull Response<TopRated> response) {
+                            if (response.isSuccessful()) {
+                                List<SingleMovie> movieList = ApiMerchant.provideMovieList(response);
+                                if (movieList != null) {
+                                    callback.onResult(movieList);
+                                }
+                                initialLoading.postValue(NetworkState.LOADED);
+                                networkState.postValue(NetworkState.LOADED);
+                                //increment page on successful load. important for pagination
+                                page_index++;
+
+                            } else {
+                                initialLoading.postValue(new NetworkState("FAILED", response.message()));
+                                networkState.postValue(new NetworkState("FAILED", response.message()));
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<TopRated> call, @NonNull Throwable t) {
+                            String errorMessage;
+                            errorMessage = t.getMessage();
+
+                            networkState.postValue(new NetworkState("FAILED", errorMessage));
+
                         }
                     });
         }
@@ -217,6 +249,44 @@ public class ItemKeyedMoviesDatasource extends ItemKeyedDataSource<Long, SingleM
 
                             } else {
                                 // Log.d(TAG, response.message());
+                                initialLoading.postValue(new NetworkState("FAILED", response.message()));
+                                networkState.postValue(new NetworkState("FAILED", response.message()));
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<TopRated> call, @NonNull Throwable t) {
+                            String errorMessage;
+                            errorMessage = t.getMessage();
+                            networkState.postValue(new NetworkState("FAILED", errorMessage));
+                            // Log.d(TAG, "Encountered an error while fetching movies");
+                        }
+                    });
+        }else{
+            ApiMerchant
+                    .getInstance()
+                    .getMyApiService()
+                    .getTopMostPopularMovies(ApiMerchant.provideApikey(), ApiMerchant.provideLanguage(), page_index)
+                    .enqueue(new Callback<TopRated>() {
+                        @Override
+                        public void onResponse(@NonNull Call<TopRated> call, @NonNull Response<TopRated> response) {
+                            if (response.isSuccessful()) {
+
+                                // Log.d(TAG, "onloadmore pop page is: " + response.body().getPage());
+
+                                //shouldFetchData = true;
+                                List<SingleMovie> movieList = ApiMerchant.provideMovieList(response);
+                                if (movieList != null) {
+                                    callback.onResult(movieList);
+                                }
+                                initialLoading.postValue(NetworkState.LOADED);
+                                networkState.postValue(NetworkState.LOADED);
+                                page_index++;
+                                // Log.d(TAG, "data loaded successfully");
+
+                            } else {
+                                //Log.d(TAG, response.message());
                                 initialLoading.postValue(new NetworkState("FAILED", response.message()));
                                 networkState.postValue(new NetworkState("FAILED", response.message()));
 

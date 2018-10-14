@@ -48,18 +48,20 @@ import com.example.dennis.popularmovies.utils.InjectorUtils;
 public class PopularMoviesViewModel extends ViewModel {
     private LiveData<PagedList<SingleMovie>> movieList;
     private LiveData<NetworkState> networkState;
-    private  MoviesDataSourceFactory factory;
+    private MoviesDataSourceFactory factory;
     private final LiveData<PagedList<SingleMovie>> favouriteList;
+    private MoviesRepository mRepository;
 
-    public PopularMoviesViewModel(MoviesRepository mRepository, String sortCriteria) {
-
-        factory = InjectorUtils.provideMoviesDataSourceFactory(sortCriteria);
+    public PopularMoviesViewModel() {
+        mRepository = MoviesRepository.getInstance();
+        factory = InjectorUtils.provideMoviesDataSourceFactory();
         networkState = Transformations.switchMap(factory.getMutableLiveData(),
                 (Function<ItemKeyedMoviesDatasource, LiveData<NetworkState>>) ItemKeyedMoviesDatasource::getNetworkState);
         movieList = mRepository.provieMovieList(factory);
-        favouriteList=mRepository.getFavouriteMovies();
+        favouriteList = mRepository.getFavouriteMovies();
 
     }
+
 
     public LiveData<PagedList<SingleMovie>> getFavouriteList() {
         return favouriteList;

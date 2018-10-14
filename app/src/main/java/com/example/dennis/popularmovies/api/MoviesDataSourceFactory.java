@@ -24,18 +24,16 @@ import java.util.concurrent.Executor;
 public class MoviesDataSourceFactory extends DataSource.Factory {
     private MutableLiveData<ItemKeyedMoviesDatasource> mutableLiveData;
     private ItemKeyedMoviesDatasource itemKeyedLikersDatasource;
-    private String sortCriteria;
 
-    public MoviesDataSourceFactory(String sortCriteria) {
+    public MoviesDataSourceFactory() {
         this.mutableLiveData = new MutableLiveData<>();
-        this.sortCriteria = sortCriteria;
 
     }
 
 
     @Override
     public DataSource create() {
-        itemKeyedLikersDatasource = new ItemKeyedMoviesDatasource(sortCriteria);
+        itemKeyedLikersDatasource = new ItemKeyedMoviesDatasource();
         mutableLiveData.postValue(itemKeyedLikersDatasource);
         return itemKeyedLikersDatasource;
     }

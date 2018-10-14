@@ -16,14 +16,8 @@ package com.example.dennis.popularmovies.viewmodels;
  * limitations under the License.
  */
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
-
-import com.example.dennis.popularmovies.MoviesRepository;
-
-public class PopularMoviesViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-    private final MoviesRepository mRepository;
+public class PopularMoviesViewModelFactory /*extends ViewModelProvider.NewInstanceFactory*/ {
+   /* private final MoviesRepository mRepository;
     private final String sortCriteria;
 
     public PopularMoviesViewModelFactory(MoviesRepository repository,String sortCriteria) {
@@ -36,5 +30,5 @@ public class PopularMoviesViewModelFactory extends ViewModelProvider.NewInstance
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         //noinspection unchecked
         return (T) new PopularMoviesViewModel(mRepository,sortCriteria);
-    }
+    }*/
 }
